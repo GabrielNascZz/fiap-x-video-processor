@@ -489,10 +489,10 @@ func getFrontendHTML() string {
                     localStorage.setItem('username', username);
                     showApp();
                 } else {
-                    document.getElementById('loginAlert').innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                    document.getElementById('loginAlert').innerHTML = '<div class="alert alert-error">' + data.error + '</div>';
                 }
             } catch (err) {
-                document.getElementById('loginAlert').innerHTML = `<div class="alert alert-error">Erro de conexão com o servidor</div>`;
+                document.getElementById('loginAlert').innerHTML = '<div class="alert alert-error">Erro de conexão com o servidor</div>';
             }
         });
 
@@ -510,12 +510,12 @@ func getFrontendHTML() string {
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    document.getElementById('registerAlert').innerHTML = `<div class="alert alert-info">Cadastro realizado! Faça login.</div>`;
+                    document.getElementById('registerAlert').innerHTML = '<div class="alert alert-info">Cadastro realizado! Faça login.</div>';
                 } else {
-                    document.getElementById('registerAlert').innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                    document.getElementById('registerAlert').innerHTML = '<div class="alert alert-error">' + data.error + '</div>';
                 }
             } catch (err) {
-                document.getElementById('registerAlert').innerHTML = `<div class="alert alert-error">Erro ao cadastrar</div>`;
+                document.getElementById('registerAlert').innerHTML = '<div class="alert alert-error">Erro ao cadastrar</div>';
             }
         });
 
@@ -534,19 +534,19 @@ func getFrontendHTML() string {
             try {
                 const res = await fetch('/api/v1/videos/upload', {
                     method: 'POST',
-                    headers: {'Authorization': `Bearer ${token}`},
+                    headers: {'Authorization': 'Bearer ' + token},
                     body: formData
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    document.getElementById('uploadAlert').innerHTML = `<div class="alert alert-info">${data.message}</div>`;
+                    document.getElementById('uploadAlert').innerHTML = '<div class="alert alert-info">' + data.message + '</div>';
                     fileInput.value = '';
                     loadVideos();
                 } else {
-                    document.getElementById('uploadAlert').innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                    document.getElementById('uploadAlert').innerHTML = '<div class="alert alert-error">' + data.error + '</div>';
                 }
             } catch (err) {
-                document.getElementById('uploadAlert').innerHTML = `<div class="alert alert-error">Erro no upload</div>`;
+                document.getElementById('uploadAlert').innerHTML = '<div class="alert alert-error">Erro no upload</div>';
             } finally {
                 uploadBtn.disabled = false;
                 uploadBtn.innerText = '🚀 Enviar para Fila de Processamento';
@@ -571,49 +571,48 @@ func getFrontendHTML() string {
             if (!token) return;
             try {
                 const res = await fetch('/api/v1/videos', {
-                    headers: {'Authorization': `Bearer ${token}`}
+                    headers: {'Authorization': 'Bearer ' + token}
                 });
                 const data = await res.json();
                 const container = document.getElementById('videosList');
                 if (data.videos && data.videos.length > 0) {
-                    container.innerHTML = data.videos.map(v => `
-                        <div class="video-item">
-                            <div>
-                                <strong>${v.original_name}</strong>
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
-                                    Criado em: ${new Date(v.created_at).toLocaleString('pt-BR')}
-                                    ${v.frame_count ? ` | 📸 ${v.frame_count} frames` : ''}
-                                    ${v.error_message ? ` | ⚠️ ${v.error_message}` : ''}
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <span class="badge badge-${v.status}">${v.status}</span>
-                                ${v.status === 'COMPLETED' ? `
-                                    <a href="/api/v1/videos/${v.id}/download" 
-                                       headers="Authorization: Bearer ${token}" 
-                                       onclick="downloadZip(event, ${v.id}, '${v.zip_path}')"
-                                       class="btn btn-success" style="padding: 6px 12px; font-size: 0.85rem; text-decoration: none;">⬇️ Download ZIP</a>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `).join('');
+                    container.innerHTML = data.videos.map(v => 
+                        '<div class="video-item">' +
+                            '<div>' +
+                                '<strong>' + v.original_name + '</strong>' +
+                                '<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">' +
+                                    'Criado em: ' + new Date(v.created_at).toLocaleString('pt-BR') +
+                                    (v.frame_count ? ' | 📸 ' + v.frame_count + ' frames' : '') +
+                                    (v.error_message ? ' | ⚠️ ' + v.error_message : '') +
+                                '</div>' +
+                            '</div>' +
+                            '<div style="display: flex; align-items: center; gap: 12px;">' +
+                                '<span class="badge badge-' + v.status + '">' + v.status + '</span>' +
+                                (v.status === 'COMPLETED' ? 
+                                    '<a href="/api/v1/videos/' + v.id + '/download" ' +
+                                       'headers="Authorization: Bearer ' + token + '" ' +
+                                       'onclick="downloadZip(event, ' + v.id + ', \'' + v.zip_path + '\')" ' +
+                                       'class="btn btn-success" style="padding: 6px 12px; font-size: 0.85rem; text-decoration: none;">⬇️ Download ZIP</a>' : '') +
+                            '</div>' +
+                        '</div>'
+                    ).join('');
                 } else {
-                    container.innerHTML = `<p style="color: var(--text-muted);">Nenhum vídeo enviado ainda.</p>`;
+                    container.innerHTML = '<p style="color: var(--text-muted);">Nenhum vídeo enviado ainda.</p>';
                 }
             } catch (err) {}
         }
 
         async function downloadZip(event, videoId, filename) {
             event.preventDefault();
-            const res = await fetch(`/api/v1/videos/${videoId}/download`, {
-                headers: {'Authorization': `Bearer ${token}`}
+            const res = await fetch('/api/v1/videos/' + videoId + '/download', {
+                headers: {'Authorization': 'Bearer ' + token}
             });
             if (res.ok) {
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = filename || `frames_${videoId}.zip`;
+                a.download = filename || ('frames_' + videoId + '.zip');
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -626,18 +625,18 @@ func getFrontendHTML() string {
             if (!token) return;
             try {
                 const res = await fetch('/api/v1/notifications', {
-                    headers: {'Authorization': `Bearer ${token}`}
+                    headers: {'Authorization': 'Bearer ' + token}
                 });
                 const data = await res.json();
                 const container = document.getElementById('notificationsList');
                 if (data.notifications && data.notifications.length > 0) {
-                    container.innerHTML = data.notifications.map(n => `
-                        <div class="alert alert-error" style="margin-bottom: 8px;">
-                            <strong>[${n.type}]</strong> ${n.message} <em>(${new Date(n.created_at).toLocaleString('pt-BR')})</em>
-                        </div>
-                    `).join('');
+                    container.innerHTML = data.notifications.map(n => 
+                        '<div class="alert alert-error" style="margin-bottom: 8px;">' +
+                            '<strong>[' + n.type + ']</strong> ' + n.message + ' <em>(' + new Date(n.created_at).toLocaleString('pt-BR') + ')</em>' +
+                        '</div>'
+                    ).join('');
                 } else {
-                    container.innerHTML = `<p style="color: var(--text-muted);">Nenhum alerta de erro registrado.</p>`;
+                    container.innerHTML = '<p style="color: var(--text-muted);">Nenhum alerta de erro registrado.</p>';
                 }
             } catch (err) {}
         }
