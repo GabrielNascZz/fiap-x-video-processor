@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiapx-api
+  namespace: fiapx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fiapx-api
+  template:
+    metadata:
+      labels:
+        app: fiapx-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/gabrielnasczz/fiap-x-video-processor-api:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: fiapx-config
+            - secretRef:
+                name: fiapx-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fiapx-api-service
+  namespace: fiapx
+spec:
+  type: LoadBalancer
+  selector:
+    app: fiapx-api
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiapx-worker
+  namespace: fiapx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fiapx-worker
+  template:
+    metadata:
+      labels:
+        app: fiapx-worker
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/gabrielnasczz/fiap-x-video-processor-worker:latest
+          envFrom:
+            - configMapRef:
+                name: fiapx-config
+            - secretRef:
+                name: fiapx-secret
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: fiapx-worker-hpa
+  namespace: fiapx
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: fiapx-worker
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

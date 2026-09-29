@@ -1,0 +1,25 @@
+# Stage 1: Build binary
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache git
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o video-worker ./cmd/worker
+
+# Stage 2: Final runtime container with FFmpeg
+FROM alpine:3.19
+
+WORKDIR /app
+
+# Install FFmpeg and required media libraries
+RUN apk add --no-cache ffmpeg ca-certificates tzdata
+
+COPY --from=builder /app/video-worker /app/video-worker
+
+CMD ["/app/video-worker"]

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fiapx-config
+  namespace: fiapx
+data:
+  PORT: "8080"
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "fiapx_video_db"
+  DB_SSLMODE: "disable"
+  STORAGE_UPLOADS: "/app/storage/uploads"
+  STORAGE_OUTPUTS: "/app/storage/outputs"
+  STORAGE_TEMP: "/app/storage/temp"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fiapx-secret
+  namespace: fiapx
+type: Opaque
+stringData:
+  DB_USER: "postgres"
+  DB_PASSWORD: "postgres123"
+  RABBITMQ_URL: "amqp://guest:guest@rabbitmq-service:5672/"
+  JWT_SECRET: "super-secret-fiapx-jwt-key-2026"
