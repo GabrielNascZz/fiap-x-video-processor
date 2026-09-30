@@ -12,6 +12,11 @@ data:
   STORAGE_UPLOADS: "/app/storage/uploads"
   STORAGE_OUTPUTS: "/app/storage/outputs"
   STORAGE_TEMP: "/app/storage/temp"
+  Smtp__Host: "mailhog"
+  Smtp__Port: "1025"
+  Smtp__Email: "notificacoes@techgarage.com"
+  Smtp__Password: "password123"
+  Smtp__EnableSsl: "false"
 ---
 apiVersion: v1
 kind: Secret

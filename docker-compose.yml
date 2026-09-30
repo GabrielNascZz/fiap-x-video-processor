@@ -132,11 +132,26 @@ services:
       DB_PASSWORD: postgres123
       DB_NAME: fiapx_video_db
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      Smtp__Host: mailhog
+      Smtp__Port: 1025
+      Smtp__Email: notificacoes@techgarage.com
+      Smtp__Password: password123
+      Smtp__EnableSsl: false
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      mailhog:
+        condition: service_started
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: fiapx_mailhog
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
   prometheus:
     image: prom/prometheus:v2.48.0

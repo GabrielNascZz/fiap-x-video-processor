@@ -44,11 +44,11 @@ func LoadConfig() *Config {
 		StorageOutputs: getEnv("STORAGE_OUTPUTS", "./storage/outputs"),
 		StorageTemp:    getEnv("STORAGE_TEMP", "./storage/temp"),
 		Environment:    getEnv("ENVIRONMENT", "development"),
-		SMTPHost:       getEnv("SMTP_HOST", ""),
-		SMTPPort:       getEnv("SMTP_PORT", "587"),
-		SMTPUser:       getEnv("SMTP_USER", ""),
-		SMTPPassword:   getEnv("SMTP_PASSWORD", ""),
-		SMTPFrom:       getEnv("SMTP_FROM", "noreply@fiapx.com"),
+		SMTPHost:       getEnv("SMTP_HOST", getEnv("Smtp__Host", "mailhog")),
+		SMTPPort:       getEnv("SMTP_PORT", getEnv("Smtp__Port", "1025")),
+		SMTPUser:       getEnv("SMTP_USER", getEnv("Smtp__Email", "notificacoes@techgarage.com")),
+		SMTPPassword:   getEnv("SMTP_PASSWORD", getEnv("Smtp__Password", "password123")),
+		SMTPFrom:       getEnv("SMTP_FROM", getEnv("Smtp__Email", "notificacoes@techgarage.com")),
 	}
 }
 

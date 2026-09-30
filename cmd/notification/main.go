@@ -89,7 +89,10 @@ func main() {
 }
 
 func sendSMTPEmail(cfg *config.Config, toEmail, subject, body string) error {
-	auth := smtp.PlainAuth("", cfg.SMTPUser, cfg.SMTPPassword, cfg.SMTPHost)
+	var auth smtp.Auth
+	if cfg.SMTPUser != "" && cfg.SMTPPassword != "" && cfg.SMTPHost != "mailhog" {
+		auth = smtp.PlainAuth("", cfg.SMTPUser, cfg.SMTPPassword, cfg.SMTPHost)
+	}
 	msg := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n%s",
 		cfg.SMTPFrom, toEmail, subject, body))
 	addr := fmt.Sprintf("%s:%s", cfg.SMTPHost, cfg.SMTPPort)
