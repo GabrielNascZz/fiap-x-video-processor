@@ -20,6 +20,11 @@ type Config struct {
 	StorageOutputs  string
 	StorageTemp     string
 	Environment     string
+	SMTPHost        string
+	SMTPPort        string
+	SMTPUser        string
+	SMTPPassword    string
+	SMTPFrom        string
 }
 
 func LoadConfig() *Config {
@@ -39,6 +44,11 @@ func LoadConfig() *Config {
 		StorageOutputs: getEnv("STORAGE_OUTPUTS", "./storage/outputs"),
 		StorageTemp:    getEnv("STORAGE_TEMP", "./storage/temp"),
 		Environment:    getEnv("ENVIRONMENT", "development"),
+		SMTPHost:       getEnv("SMTP_HOST", ""),
+		SMTPPort:       getEnv("SMTP_PORT", "587"),
+		SMTPUser:       getEnv("SMTP_USER", ""),
+		SMTPPassword:   getEnv("SMTP_PASSWORD", ""),
+		SMTPFrom:       getEnv("SMTP_FROM", "noreply@fiapx.com"),
 	}
 }
 
